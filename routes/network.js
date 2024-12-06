@@ -1,7 +1,7 @@
 const express = require('express');
 const Node = require('../models/Node');
 const Pipe = require('../models/Pipe');
-const { authMiddleware, adminMiddleware } = require('../middleware/authMiddleware');
+const { authMiddleware, adminMiddleware } = require('../middleware/auth');
 const mongoose = require('mongoose');
 
 const router = express.Router();
@@ -59,6 +59,32 @@ router.get('/nodes/search', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+//Create a node (admin only)
+router.post('/node', [authMiddleware, adminMiddleware], async (req, res) => {
+    try {
+      // Validate Corfu Island bounds
+      const { location } = req.body;
+      if (
+        location.latitude < 38.5 || location.latitude > 39.8 ||
+        location.longitude < 19.3 || location.longitude > 20.3
+      ) {
+        return res.status(400).json({ message: 'Node location must be within Corfu Island bounds' });
+      }
+  
+      
+      const newNode = await Node.create(req.body);
+      
+      res.status(201).json(newNode);
+    } catch (err) {
+      console.error('Node Creation Error:', err);
+      res.status(500).json({ 
+        message: 'Error creating node', 
+        error: err.message 
+      });
+    }
+  });
+
 
 // Update a node (admin only)
 router.put('/node/:id', [authMiddleware, adminMiddleware], async (req, res) => {
@@ -134,7 +160,7 @@ router.delete('/node/:id', [authMiddleware, adminMiddleware], async (req, res) =
   }
 });
 
-// Advanced Pipes Search and Filtering
+//Pipe Search and Filtering
 router.get('/pipes/search', async (req, res) => {
   try {
     const { 
@@ -147,13 +173,13 @@ router.get('/pipes/search', async (req, res) => {
       maxLength
     } = req.query;
 
-    // Build dynamic query
+    
     const query = {};
 
-    // Status filtering
+    // Status filter
     if (status) query.status = status;
 
-    // Flow filtering
+    // Flow filter
     if (minFlow || maxFlow) {
       query.flow = {};
       if (minFlow) query.flow.$gte = parseFloat(minFlow);
@@ -192,6 +218,32 @@ router.get('/pipes/search', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// Create Pipe (Admin Only)
+router.post('/pipe', [authMiddleware, adminMiddleware], async (req, res) => {
+    try {
+      const { startNode, endNode } = req.body;
+  
+     
+      const start = await Node.findById(startNode);
+      const end = await Node.findById(endNode);
+  
+      if (!start || !end) {
+        return res.status(404).json({ message: 'One or both nodes do not exist' });
+      }
+  
+      
+      const newPipe = await Pipe.create(req.body);
+      
+      res.status(201).json(newPipe);
+    } catch (err) {
+      console.error('Pipe Creation Error:', err);
+      res.status(500).json({ 
+        message: 'Error creating pipe', 
+        error: err.message 
+      });
+    }
+  });
 
 // Update a pipe (admin only)
 router.put('/pipe/:id', [authMiddleware, adminMiddleware], async (req, res) => {

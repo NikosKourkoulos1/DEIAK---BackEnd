@@ -1,7 +1,7 @@
 require('dotenv').config({ path: './.env' });
 const express = require('express');
 const mongoose = require('mongoose');
-const authRoutes = require('./routes/auth');
+//const authRoutes = require('./routes/auth');
 const networkRoutes = require('./routes/network');
 const cors = require('cors');
 
@@ -28,8 +28,9 @@ connectDB();
 app.get('/', (req, res) => {
     res.send('Back End Up and Running!');
 });
-  
+/*removed admin users for testing purposes  
 app.use('/api/auth', authRoutes);
+*/
 app.use('/api/network', networkRoutes);
 
 // Error handling
