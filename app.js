@@ -2,11 +2,14 @@ require('dotenv').config({ path: './.env' });
 const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
+const networkRoutes = require('./routes/network');
+const cors = require('cors');
+
 const app = express();
+
+
+app.use(cors()); // Enable CORS 
 app.use(express.json()); 
-
-
-console.log('MONGO_URI:', process.env.MONGO_URI);
 
 
 mongoose.set('strictQuery', false);
@@ -21,11 +24,18 @@ const connectDB = async () => {
 }
 connectDB();
 
+// Routes
 app.get('/', (req, res) => {
     res.send('Back End Up and Running!');
-  });
+});
   
 app.use('/api/auth', authRoutes);
+app.use('/api/network', networkRoutes);
 
+// Error handling
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
 
 module.exports = app;
