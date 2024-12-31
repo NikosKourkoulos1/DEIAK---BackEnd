@@ -28,9 +28,9 @@ connectDB();
 app.get('/', (req, res) => {
     res.send('Back End Up and Running!');
 });
-/*removed admin users for testing purposes  
+
 app.use('/api/auth', authRoutes);
-*/
+
 app.use('/api/network', networkRoutes);
 
 // Error handling
