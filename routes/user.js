@@ -6,7 +6,7 @@ const User = require('../models/User');
 const router = express.Router();
 
 // Get User Details
-app.get('/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
     try {
       const user = await User.findById(req.params.id);
       if (!user) {
@@ -16,10 +16,10 @@ app.get('/:id', async (req, res) => {
     } catch (err) {
       res.status(500).json({ message: 'Server error', error: err.message });
     }
-  });
+});
   
-  //Update a user's details (excluding role)
-  app.put('/:id', async (req, res) => {
+//Update a user's details (excluding role)
+router.put('/:id', async (req, res) => {
     try {
       const { name, email, password } = req.body;
   
@@ -45,10 +45,10 @@ app.get('/:id', async (req, res) => {
         res.status(500).json({ message: 'Server error', error: err.message });
       }
     }
-  });
+});
   
   // Delete a user by ID
-  app.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
       const user = await User.findByIdAndDelete(req.params.id);
       if (!user) {
@@ -58,6 +58,6 @@ app.get('/:id', async (req, res) => {
     } catch (err) {
       res.status(500).json({ message: 'Server error', error: err.message });
     }
-  });
+});
   
 module.exports = router;
