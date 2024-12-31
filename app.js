@@ -3,6 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/auth');
 const networkRoutes = require('./routes/network');
+const userRoutes = require('./routes/user');
 const cors = require('cors');
 
 const app = express();
@@ -28,6 +29,8 @@ connectDB();
 app.get('/', (req, res) => {
     res.send('Back End Up and Running!');
 });
+
+app.use('/api/user', userRoutes);
 
 app.use('/api/auth', authRoutes);
 
